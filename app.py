@@ -80,8 +80,6 @@ translations = {
         "absence_details_header": "🔍 Attendance & Absence Log Breakdown",
         "table_col_date": "📅 Date",
         "table_col_status": "🔴 Status / Absent (bsent)",
-        "table_col_clockin": "🟢 Clock In",
-        "table_col_clockout": "🔵 Clock Out",
         "table_col_late": "⏰ Late",
         "admin_employees_header": "👥 Unique Employee Management",
         "reset_pass_btn": "🔄 Reset Password",
@@ -128,8 +126,6 @@ translations = {
         "absence_details_header": "🔍 تفاصيل سجل الحضور والغياب",
         "table_col_date": "📅 التاريخ (Date)",
         "table_col_status": "🔴 الحالة / غياب (bsent)",
-        "table_col_clockin": "🟢 الحضور (Clock In)",
-        "table_col_clockout": "🔵 الانصراف (Clock Out)",
         "table_col_late": "⏰ التأخير (Late)",
         "admin_employees_header": "👥 إدارة الموظفين الفريدين وكلمات المرور",
         "reset_pass_btn": "🔄 إعادة تعيين كلمة المرور",
@@ -198,14 +194,11 @@ def save_excel_safely(df):
 
 def get_employee_attendance_records(df, employee_name):
     """
-    Extracts all rows belonging to the employee matching the exact format:
-    Date, Clock In, Clock Out, Late, bsent (Absent), etc.
+    Extracts all rows belonging to the employee focusing on Date, Late, and bsent (Absent) without hours.
     """
     name_col = next((c for c in df.columns if c.upper() == "NAME" or any(k in c.lower() for k in ["الاسم", "اسم", "name"])), None)
     date_col = next((c for c in df.columns if c.lower() == "date" or any(k in c.lower() for k in ["التاريخ", "day"])), None)
     bsent_col = next((c for c in df.columns if c.lower() in ["bsent", "absent"] or any(k in c.lower() for k in ["غياب"])), None)
-    clockin_col = next((c for c in df.columns if "clock in" in c.lower() or "حضور" in c.lower()), None)
-    clockout_col = next((c for c in df.columns if "clock out" in c.lower() or "انصراف" in c.lower()), None)
     late_col = next((c for c in df.columns if "late" in c.lower() or "تأخير" in c.lower()), None)
 
     if not name_col:
@@ -218,8 +211,6 @@ def get_employee_attendance_records(df, employee_name):
     for _, row in emp_rows.iterrows():
         date_val = str(row[date_col]).strip().replace(".0", "") if date_col and pd.notna(row[date_col]) else "-"
         bsent_val = str(row[bsent_col]).strip() if bsent_col and pd.notna(row[bsent_col]) else ""
-        clockin_val = str(row[clockin_col]).strip() if clockin_col and pd.notna(row[clockin_col]) else "-"
-        clockout_val = str(row[clockout_col]).strip() if clockout_col and pd.notna(row[clockout_col]) else "-"
         late_val = str(row[late_col]).strip() if late_col and pd.notna(row[late_col]) else "-"
 
         row_full_text = " ".join([str(val).lower() for val in row.values])
@@ -232,11 +223,11 @@ def get_employee_attendance_records(df, employee_name):
         if is_absent:
             total_absences += 1
 
+        formatted_late = late_val if late_val not in ["nan", "None", "", "0", "00:00:00", "-.0", "-0"] else "-"
+
         attendance_records.append({
             t["table_col_date"]: date_val,
-            t["table_col_clockin"]: clockin_val if clockin_val not in ["nan", "None", ""] else "-",
-            t["table_col_clockout"]: clockout_val if clockout_val not in ["nan", "None", ""] else "-",
-            t["table_col_late"]: late_val if late_val not in ["nan", "None", ""] else "-",
+            t["table_col_late"]: formatted_late,
             t["table_col_status"]: bsent_val if bsent_val not in ["nan", "None", ""] else "Present / حضور"
         })
 
@@ -411,20 +402,19 @@ if st.session_state.get("logged_in_user"):
 
     if attendance_list:
         df_attendance = pd.DataFrame(attendance_list)
-        st.markdown("""
-        <style>
-            [data-testid="stTable"] th, 
-            [data-testid="stTable"] td {
-                text-align: center !important;
-                justify-content: center !important;
-            }
-        </style>
-        """, unsafe_allow_html=True)
         
-        # Wrapped in columns [1, 2, 1] to make the table 50% width and centered
+        # Function to highlight late and absent text in red
+        def highlight_red(val):
+            val_str = str(val).lower()
+            if val_str not in ["-", "present / حضور", "nan", "none", ""]:
+                return 'color: red; font-weight: bold;'
+            return ''
+
+        styled_df = df_attendance.style.applymap(highlight_red, subset=[t["table_col_late"], t["table_col_status"]])
+
         col_spacer1, col_tbl, col_spacer2 = st.columns([1, 2, 1])
         with col_tbl:
-            st.table(df_attendance)
+            st.dataframe(styled_df, use_container_width=True, hide_index=True)
     else:
         st.success(t["no_absences_msg"])
 
