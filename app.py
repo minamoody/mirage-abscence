@@ -410,7 +410,7 @@ if st.session_state.get("logged_in_user"):
                 return 'color: red; font-weight: bold;'
             return ''
 
-        styled_df = df_attendance.style.applymap(highlight_red, subset=[t["table_col_late"], t["table_col_status"]])
+        styled_df = df_attendance.style.map(highlight_red, subset=[t["table_col_late"], t["table_col_status"]])
 
         col_spacer1, col_tbl, col_spacer2 = st.columns([1, 2, 1])
         with col_tbl:
