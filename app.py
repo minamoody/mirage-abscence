@@ -17,12 +17,8 @@ if "admin_logged_in" not in st.session_state:
     st.session_state.admin_logged_in = False
 if "logged_in_user" not in st.session_state:
     st.session_state.logged_in_user = None
-if "logged_in_id" not in st.session_state:
-    st.session_state.logged_in_id = None
-if "employee_rows" not in st.session_state:
-    st.session_state.employee_rows = None
-if "checked_id" not in st.session_state:
-    st.session_state.checked_id = None
+if "checked_name" not in st.session_state:
+    st.session_state.checked_name = None
 if "uploader_key" not in st.session_state:
     st.session_state.uploader_key = 0
 
@@ -46,7 +42,7 @@ def set_portal_status(is_open: bool):
 translations = {
     "English": {
         "title": "📅 Mirage Employee Attendance & Absence Portal",
-        "subtitle": "🆔 Please enter your National ID to check your attendance records.",
+        "subtitle": "🆔 Please enter your Name to check your attendance records.",
         "admin_header": "🛠️ Admin Control Panel",
         "admin_pass_label": "🔑 Enter Admin Password:",
         "admin_pass_btn": "🔓 Unlock Admin Panel",
@@ -61,8 +57,8 @@ translations = {
         "refresh_success": "✅ Data refreshed successfully!",
         "upload_success": "✅ Attendance file uploaded successfully! Portal unlocked.",
         "remove_success": "🗑️ File removed. Portal locked and data wiped.",
-        "input_label": "🆔 National ID (الرقم القومي):",
-        "check_id_btn": "➡️ Next / Verify ID",
+        "input_label": "🆔 Employee Name (الاسم):",
+        "check_id_btn": "➡️ Next / Verify Name",
         "password_input_label": "🔒 Password (كلمة المرور):",
         "new_password_label": "✨ Create Your Password (أنشئ كلمة المرور):",
         "confirm_password_label": "✔️ Confirm Password (تأكيد كلمة المرور):",
@@ -73,13 +69,13 @@ translations = {
         "empty_input": "⚠️ Please fill in all required fields.",
         "pass_mismatch": "❌ Passwords do not match. Please try again.",
         "pass_taken": "⚠️ This password is already taken. Please choose another.",
-        "error_id": "⚠️ National ID not found. Please check and try again.",
+        "error_name": "⚠️ Employee Name not found. Please check and try again.",
         "error_login": "❌ Incorrect Password. Please check and try again.",
         "register_success": "🎉 Password created successfully! Welcome.",
         "error_read": "❌ Error reading file: {error}",
         "dashboard_title": "📊 Employee Absence Breakdown",
         "welcome_banner": "👋 Welcome, {name}!",
-        "id_display": "🆔 National ID:",
+        "name_display": "👤 Employee Name:",
         "total_absences_label": "📌 Total Absence Days (إجمالي أيام الغياب):",
         "absence_details_header": "🔍 Unique Absence Dates & Details",
         "table_col_date": "📅 Date / Period",
@@ -91,7 +87,7 @@ translations = {
     },
     "العربية": {
         "title": "📅 بوابة متابعة غياب وحضور العاملين بـ شركة ميراج",
-        "subtitle": "🆔 الرجاء إدخال الرقم القومي للاطلاع على سجل الغياب.",
+        "subtitle": "🆔 الرجاء إدخال اسم الموظف للاطلاع على سجل الغياب.",
         "admin_header": "🛠️ لوحة تحكم المسؤول (Admin)",
         "admin_pass_label": "🔑 أدخل كلمة مرور المسؤول:",
         "admin_pass_btn": "🔓 فتح لوحة المسؤول",
@@ -106,8 +102,8 @@ translations = {
         "refresh_success": "✅ تم تحديث البيانات بنجاح!",
         "upload_success": "✅ تم رفع ملف الحضور بنجاح! تم فتح البوابة تلقائياً.",
         "remove_success": "🗑️ تم حذف الملف وإغلاق البوابة ومسح البيانات.",
-        "input_label": "🆔 الرقم القومي (National ID):",
-        "check_id_btn": "➡️ التالي / التحقق من الرقم",
+        "input_label": "🆔 اسم الموظف (Name):",
+        "check_id_btn": "➡️ التالي / التحقق من الاسم",
         "password_input_label": "🔒 كلمة المرور (Password):",
         "new_password_label": "✨ أنشئ كلمة المرور الخاصة بك:",
         "confirm_password_label": "✔️ تأكيد كلمة المرور:",
@@ -118,13 +114,13 @@ translations = {
         "empty_input": "⚠️ الرجاء ملء جميع الحقول المطلوبة.",
         "pass_mismatch": "❌ كلمتا المرور غير متطابقتين. يرجى المحاولة مرة أخرى.",
         "pass_taken": "⚠️ كلمة المرور هذه مستخدمة من قبل موظف آخر.",
-        "error_id": "⚠️ الرقم القومي غير موجود. يرجى التحقق والمحاولة.",
+        "error_name": "⚠️ اسم الموظف غير موجود. يرجى التحقق والمحاولة.",
         "error_login": "❌ كلمة المرور غير صحيحة. يرجى التحقق.",
         "register_success": "🎉 تم إنشاء كلمة المرور بنجاح! أهلاً بك.",
         "error_read": "❌ خطأ في قراءة الملف: {error}",
         "dashboard_title": "📊 سجل غياب الموظف والتفاصيل اليومية",
         "welcome_banner": "👋 أهلاً بك يا {name}!",
-        "id_display": "🆔 الرقم القومي:",
+        "name_display": "👤 اسم الموظف:",
         "total_absences_label": "📌 إجمالي أيام الغياب:",
         "absence_details_header": "🔍 تواريخ وتفاصيل أيام الغياب الفريدة",
         "table_col_date": "📅 التاريخ / الفترة",
@@ -166,15 +162,9 @@ def load_excel_df():
             )
             df.loc[df["Password"].isin(["nan", "None", ""]), "Password"] = ""
 
-        id_col = next((c for c in df.columns if any(k in c.lower() for k in ["الرقم القومي", "national id", "id"])), None)
-        if id_col:
-            df[id_col] = (
-                df[id_col]
-                .fillna("")
-                .astype(str)
-                .str.replace(r"\.0$", "", regex=True)
-                .str.strip()
-            )
+        name_col = next((c for c in df.columns if any(k in c.lower() for k in ["الاسم", "اسم", "name"])), None)
+        if name_col:
+            df[name_col] = df[name_col].fillna("").astype(str).str.strip()
         return df
     except Exception:
         if os.path.exists(SHARED_FILE):
@@ -190,9 +180,9 @@ def load_excel_df():
         return None
 
 def save_excel_safely(df):
-    id_col = next((c for c in df.columns if any(k in c.lower() for k in ["الرقم القومي", "national id", "id"])), None)
-    if id_col:
-        df[id_col] = df[id_col].astype(str).str.replace(r"\.0$", "", regex=True).str.strip()
+    name_col = next((c for c in df.columns if any(k in c.lower() for k in ["الاسم", "اسم", "name"])), None)
+    if name_col:
+        df[name_col] = df[name_col].astype(str).str.strip()
     if "Password" in df.columns:
         df["Password"] = df["Password"].astype(str).str.replace(r"\.0$", "", regex=True).str.strip()
         df.loc[df["Password"].isin(["nan", "None", ""]), "Password"] = ""
@@ -200,26 +190,25 @@ def save_excel_safely(df):
     df.to_excel(SHARED_FILE, index=False)
     st.cache_data.clear()
 
-def get_employee_absences(df, national_id):
+def get_employee_absences(df, employee_name):
     """
-    Scans all rows belonging to a specific employee ID and aggregates 
+    Scans all rows belonging to a specific employee Name and aggregates 
     unique absence dates, filtering out duplicates and non-absence entries.
     """
-    id_col = next((c for c in df.columns if any(k in c.lower() for k in ["الرقم القومي", "national id", "id"])), None)
+    name_col = next((c for c in df.columns if any(k in c.lower() for k in ["الاسم", "اسم", "name"])), None)
     date_col = next((c for c in df.columns if any(k in c.lower() for k in ["date", "التاريخ", "day"])), None)
     status_col = next((c for c in df.columns if any(k in c.lower() for k in ["status", "الحالة", "البيان", "notes"])), None)
 
-    if not id_col:
+    if not name_col:
         return 0, []
 
-    emp_rows = df[df[id_col].astype(str).str.strip() == str(national_id).strip()]
+    emp_rows = df[df[name_col].astype(str).str.strip().str.lower() == str(employee_name).strip().lower()]
     absence_records = []
     seen_dates = set()
 
     for _, row in emp_rows.iterrows():
         row_text = " ".join([str(val).lower() for val in row.values])
         
-        # Check if row indicates an absence condition
         is_absent = any(kw in row_text for kw in ["غياب", "absent", "leave", "vacation"]) or \
                     (status_col and any(kw in str(row[status_col]).lower() for kw in ["غياب", "absent"]))
 
@@ -227,7 +216,6 @@ def get_employee_absences(df, national_id):
             date_val = str(row[date_col]).strip().replace(".0", "") if date_col and pd.notna(row[date_col]) else "Recorded Absence"
             status_val = str(row[status_col]).strip() if status_col and pd.notna(row[status_col]) else "Absent / غياب"
 
-            # Prevent duplicate listing of the exact same date
             if date_val not in seen_dates:
                 seen_dates.add(date_val)
                 absence_records.append({
@@ -278,19 +266,19 @@ else:
             existing_passwords = {}
             if os.path.exists(SHARED_FILE):
                 df_old = load_excel_df()
-                id_c_old = next((c for c in df_old.columns if any(k in c.lower() for k in ["الرقم القومي", "national id", "id"])), None)
-                if df_old is not None and id_c_old and "Password" in df_old.columns:
+                name_c_old = next((c for c in df_old.columns if any(k in c.lower() for k in ["الاسم", "اسم", "name"])), None)
+                if df_old is not None and name_c_old and "Password" in df_old.columns:
                     for _, row in df_old.iterrows():
-                        nid = str(row[id_c_old]).strip().replace(".0", "")
+                        ename = str(row[name_c_old]).strip().lower()
                         pwd = str(row["Password"]).strip()
                         if pwd and pwd.lower() not in ["nan", "none", ""]:
-                            existing_passwords[nid] = pwd
+                            existing_passwords[ename] = pwd
 
-            id_c_up = next((c for c in df_upload.columns if any(k in c.lower() for k in ["الرقم القومي", "national id", "id"])), None)
+            name_c_up = next((c for c in df_upload.columns if any(k in c.lower() for k in ["الاسم", "اسم", "name"])), None)
             pass_col = []
             for _, row in df_upload.iterrows():
-                nid = str(row.get(id_c_up, "")).strip().replace(".0", "") if id_c_up else ""
-                pass_col.append(existing_passwords.get(nid, ""))
+                ename = str(row.get(name_c_up, "")).strip().lower() if name_c_up else ""
+                pass_col.append(existing_passwords.get(ename, ""))
             df_upload["Password"] = pass_col
 
             save_excel_safely(df_upload)
@@ -307,25 +295,21 @@ else:
         st.sidebar.subheader(t["admin_employees_header"])
         df_admin = load_excel_df()
         if df_admin is not None:
-            id_c_adm = next((c for c in df_admin.columns if any(k in c.lower() for k in ["الرقم القومي", "national id", "id"])), None)
-            name_c_adm = next((c for c in df_admin.columns if any(k in c.lower() for k in ["الاسم", "name"])), None)
+            name_c_adm = next((c for c in df_admin.columns if any(k in c.lower() for k in ["الاسم", "اسم", "name"])), None)
             
-            if id_c_adm:
-                # Group by unique employee ID so each person shows up exactly once in the admin sidebar list
-                unique_employees = df_admin.drop_duplicates(subset=[id_c_adm])
+            if name_c_adm:
+                unique_employees = df_admin.drop_duplicates(subset=[name_c_adm])
                 
                 for idx, row in unique_employees.iterrows():
-                    emp_name = row.get(name_c_adm, f"Employee") if name_c_adm else "Employee"
-                    nid = str(row.get(id_c_adm, "")).strip()
+                    emp_name = str(row.get(name_c_adm, f"Employee")).strip()
                     current_pwd = str(row.get("Password", "")).strip()
                     has_pass = current_pwd not in ["", "nan", "None"]
                     status_text = "🔒 Registered" if has_pass else "⏳ Not Registered"
 
                     with st.sidebar.expander(f"👤 {emp_name} ({status_text})"):
-                        st.write(f"🆔 ID: `{nid}`")
                         if has_pass:
-                            if st.button(t["reset_pass_btn"], key=f"reset_{nid}_{idx}"):
-                                df_admin.loc[df_admin[id_c_adm].astype(str).str.strip() == nid, "Password"] = ""
+                            if st.button(t["reset_pass_btn"], key=f"reset_{emp_name}_{idx}"):
+                                df_admin.loc[df_admin[name_c_adm].astype(str).str.strip().str.lower() == emp_name.lower(), "Password"] = ""
                                 save_excel_safely(df_admin)
                                 st.success(t["reset_success"].format(name=emp_name))
                                 st.rerun()
@@ -383,25 +367,23 @@ if not is_portal_open():
 if st.session_state.get("logged_in_user"):
     df_verify = load_excel_df()
     user_exists = False
-    id_c_ver = next((c for c in df_verify.columns if any(k in c.lower() for k in ["الرقم القومي", "national id", "id"])), None) if df_verify is not None else None
+    name_c_ver = next((c for c in df_verify.columns if any(k in c.lower() for k in ["الاسم", "اسم", "name"])), None) if df_verify is not None else None
     
-    if df_verify is not None and id_c_ver:
-        v_match = df_verify[df_verify[id_c_ver].astype(str).str.strip() == str(st.session_state.get("logged_in_id")).strip()]
+    if df_verify is not None and name_c_ver:
+        v_match = df_verify[df_verify[name_c_ver].astype(str).str.strip().str.lower() == str(st.session_state.get("logged_in_user")).strip().lower()]
         if not v_match.empty:
             user_exists = True
 
     if not user_exists:
         st.session_state.logged_in_user = None
-        st.session_state.logged_in_id = None
-        st.session_state.checked_id = None
+        st.session_state.checked_name = None
         st.rerun()
 
     st.success(t["welcome_banner"].format(name=st.session_state.logged_in_user))
     st.markdown(f"### 📋 {t['dashboard_title']}")
-    st.info(f"**{t['id_display']}** `{str(st.session_state.get('logged_in_id')).strip()}`")
+    st.info(f"**{t['name_display']}** `{str(st.session_state.get('logged_in_user')).strip()}`")
 
-    # Scan all records for this employee across rows to summarize absences correctly
-    total_absences, absence_list = get_employee_absences(df_verify, st.session_state.get("logged_in_id"))
+    total_absences, absence_list = get_employee_absences(df_verify, st.session_state.get("logged_in_user"))
 
     col_m1, col_m2 = st.columns(2)
     with col_m1:
@@ -428,8 +410,7 @@ if st.session_state.get("logged_in_user"):
     st.markdown("---")
     if st.button(t["logout_btn"]):
         st.session_state.logged_in_user = None
-        st.session_state.logged_in_id = None
-        st.session_state.checked_id = None
+        st.session_state.checked_name = None
         st.rerun()
 
 else:
@@ -439,40 +420,41 @@ else:
         if df is None:
             st.error(t["error_read"].format(error="Could not load data."))
         else:
-            id_c_main = next((c for c in df.columns if any(k in c.lower() for k in ["الرقم القومي", "national id", "id"])), None)
-            name_c_main = next((c for c in df.columns if any(k in c.lower() for k in ["الاسم", "name"])), None)
+            name_c_main = next((c for c in df.columns if any(k in c.lower() for k in ["الاسم", "اسم", "name"])), None)
             
-            if not id_c_main:
-                st.error("❌ Could not locate National ID column in the uploaded Excel file.")
+            if not name_c_main:
+                st.error("❌ Could not locate Name column in the uploaded Excel file.")
             else:
-                if st.session_state.get("checked_id") is None:
-                    national_id_input = st.text_input(t["input_label"], key="national_id_field")
-                    submit_id = st.button(t["check_id_btn"])
+                if st.session_state.get("checked_name") is None:
+                    employee_name_input = st.text_input(t["input_label"], key="employee_name_field")
+                    submit_name = st.button(t["check_id_btn"])
 
-                    if submit_id:
-                        if not national_id_input.strip():
+                    if submit_name:
+                        if not employee_name_input.strip():
                             st.warning(t["empty_input"])
                         else:
-                            clean_input_id = national_id_input.strip().replace(".0", "").replace("\t", "")
-                            matched = df[df[id_c_main].astype(str).str.strip() == clean_input_id]
+                            clean_input_name = employee_name_input.strip()
+                            matched = df[df[name_c_main].astype(str).str.strip().str.lower() == clean_input_name.lower()]
                             if not matched.empty:
-                                st.session_state.checked_id = clean_input_id
+                                # Standardize to exact case from database
+                                exact_name = matched.iloc[0][name_c_main]
+                                st.session_state.checked_name = exact_name
                                 st.rerun()
                             else:
-                                st.error(t["error_id"])
+                                st.error(t["error_name"])
                 else:
-                    national_id_input = st.session_state.checked_id
+                    employee_name_input = st.session_state.checked_name
                     df_current = load_excel_df()
-                    matched = df_current[df_current[id_c_main].astype(str).str.strip() == str(national_id_input).strip()]
+                    matched = df_current[df_current[name_c_main].astype(str).str.strip().str.lower() == str(employee_name_input).strip().lower()]
 
                     if not matched.empty:
-                        emp_name = matched.iloc[0].get(name_c_main, "Employee") if name_c_main else "Employee"
+                        emp_name = matched.iloc[0][name_c_main]
                         current_pass = str(matched.iloc[0].get("Password", "")).strip()
 
-                        st.info(f"👤 **{emp_name}** (ID: `{national_id_input}`)")
+                        st.info(f"👤 **{emp_name}**")
 
                         if st.button(t["back_btn"]):
-                            st.session_state.checked_id = None
+                            st.session_state.checked_name = None
                             st.rerun()
 
                         if current_pass == "" or current_pass.lower() == "nan":
@@ -491,11 +473,10 @@ else:
                                     if new_pass.strip() in existing_passes:
                                         st.error(t["pass_taken"])
                                     else:
-                                        df_current.loc[df_current[id_c_main].astype(str).str.strip() == str(national_id_input).strip(), "Password"] = new_pass.strip()
+                                        df_current.loc[df_current[name_c_main].astype(str).str.strip().str.lower() == str(employee_name_input).strip().lower(), "Password"] = new_pass.strip()
                                         save_excel_safely(df_current)
                                         st.session_state.logged_in_user = emp_name
-                                        st.session_state.logged_in_id = national_id_input
-                                        st.session_state.checked_id = None
+                                        st.session_state.checked_name = None
                                         st.success(t["register_success"])
                                         st.rerun()
                         else:
@@ -507,8 +488,7 @@ else:
                                     st.warning(t["empty_input"])
                                 elif password_input.strip() == current_pass:
                                     st.session_state.logged_in_user = emp_name
-                                    st.session_state.logged_in_id = national_id_input
-                                    st.session_state.checked_id = None
+                                    st.session_state.checked_name = None
                                     st.rerun()
                                 else:
                                     st.error(t["error_login"])
