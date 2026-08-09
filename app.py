@@ -222,7 +222,6 @@ def get_employee_attendance_records(df, employee_name):
         clockout_val = str(row[clockout_col]).strip() if clockout_col and pd.notna(row[clockout_col]) else "-"
         late_val = str(row[late_col]).strip() if late_col and pd.notna(row[late_col]) else "-"
 
-        # Check if absent (e.g. contains 'غياب' or 'absent' or marked in bsent column)
         row_full_text = " ".join([str(val).lower() for val in row.values])
         is_absent = (bsent_val.lower() not in ["", "nan", "none", "0", "-"]) or \
                     any(kw in row_full_text for kw in ["غياب", "absent"])
@@ -421,7 +420,11 @@ if st.session_state.get("logged_in_user"):
             }
         </style>
         """, unsafe_allow_html=True)
-        st.table(df_attendance)
+        
+        # Wrapped in columns [1, 2, 1] to make the table 50% width and centered
+        col_spacer1, col_tbl, col_spacer2 = st.columns([1, 2, 1])
+        with col_tbl:
+            st.table(df_attendance)
     else:
         st.success(t["no_absences_msg"])
 
